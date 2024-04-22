@@ -1,0 +1,292 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
+
+typedef struct node node;
+typedef struct LinkedList LinkedList;
+typedef struct Hash Hash;
+typedef struct cash cash;
+
+struct node
+{
+    int val;
+    node *next;
+    node *prev;
+};
+
+struct LinkedList
+{
+    node *head;
+    node *tail;
+};
+
+struct Hash
+{
+    int capacity;
+    LinkedList **array;
+};
+
+struct cash
+{
+    Hash *table;
+    int size_T;
+};
+
+// Function prototypes
+node *create_node(int data);
+LinkedList *List();
+void list_free(LinkedList **list);
+void pushFront(LinkedList *list, int data);
+void popBack(LinkedList *list);
+node *find_node(LinkedList *list, int data);
+Hash *create_HASH_TABLE(int size_Table);
+void free_HASH(Hash *hash);
+int hash_function(int key, int capacity);
+void hash_add(cash *cash, int page);
+void hash_delete(cash *cash, int page);
+cash *init_cash(int size_Table);
+void free_cash(cash *CASH);
+int init_value_in_list(cash *Cash, int page);
+void print_list(LinkedList *list);
+int print(cash *cash, int *array, int size);
+
+// Function implementations
+
+node *create_node(int data)
+{
+    node *new_node = (node *)malloc(sizeof(node));
+    if (new_node == NULL)
+    {
+        exit(1);
+    }
+    new_node->val = data;
+    new_node->next = NULL;
+    new_node->prev = NULL;
+    return new_node;
+}
+
+LinkedList *List()
+{
+    LinkedList *list = (LinkedList *)malloc(sizeof(LinkedList));
+    if (list == NULL)
+    {
+        exit(1);
+    }
+    list->head = NULL;
+    list->tail = NULL;
+    return list;
+}
+
+void list_free(LinkedList **list)
+{
+    node *tmp = (*list)->head;
+    node *next = NULL;
+    while (tmp)
+    {
+        next = tmp->next;
+        free(tmp);
+        tmp = next;
+    }
+    free(*list);
+    *list = NULL;
+}
+
+void pushFront(LinkedList *list, int data)
+{
+    node *tmp = create_node(data);
+    tmp->next = list->head;
+    if (list->head)
+    {
+        list->head->prev = tmp;
+    }
+    list->head = tmp;
+    if (list->tail == NULL)
+    {
+        list->tail = tmp;
+    }
+}
+
+void popBack(LinkedList *list)
+{
+    node *next;
+    if (list->tail == NULL)
+    {
+        exit(4);
+    }
+    next = list->tail;
+    list->tail = list->tail->prev;
+    if (list->tail)
+    {
+        list->tail->next = NULL;
+    }
+    if (next == list->head)
+    {
+        list->head = NULL;
+    }
+    free(next);
+}
+
+node *find_node(LinkedList *list, int data)
+{
+    node *current = list->head;
+    while (current != NULL)
+    {
+        if (current->val == data)
+        {
+            return current;
+        }
+        current = current->next;
+    }
+    return NULL;
+}
+
+Hash *create_HASH_TABLE(int size_Table)
+{
+    Hash *our_hash = (Hash *)malloc(sizeof(Hash));
+    if (our_hash == NULL)
+    {
+        exit(1);
+    }
+    our_hash->capacity = size_Table;
+    our_hash->array = (LinkedList **)malloc(size_Table * sizeof(LinkedList *));
+    if (our_hash->array == NULL)
+    {
+        exit(1);
+    }
+    for (int i = 0; i < size_Table; i++)
+    {
+        our_hash->array[i] = List();
+    }
+    return our_hash;
+}
+
+void free_HASH(Hash *hash)
+{
+    for (int i = 0; i < hash->capacity; i++)
+    {
+        list_free(&hash->array[i]);
+    }
+    free(hash->array);
+    free(hash);
+}
+
+int hash_function(int key, int capacity)
+{
+    return key % capacity;
+}
+
+void hash_add(cash *cash, int page)
+{
+    int index = hash_function(page, cash->table->capacity);
+    pushFront(cash->table->array[index], page);
+}
+
+void hash_delete(cash *cash, int page)
+{
+    int index = hash_function(page, cash->table->capacity);
+    node *to_delete = find_node(cash->table->array[index], page);
+    if (to_delete != NULL)
+    {
+        if (to_delete == cash->table->array[index]->head)
+        {
+            cash->table->array[index]->head = to_delete->next;
+        }
+        if (to_delete == cash->table->array[index]->tail)
+        {
+            cash->table->array[index]->tail = to_delete->prev;
+        }
+        if (to_delete->prev)
+        {
+            to_delete->prev->next = to_delete->next;
+        }
+        if (to_delete->next)
+        {
+            to_delete->next->prev = to_delete->prev;
+        }
+        free(to_delete);
+    }
+}
+
+cash *init_cash(int size_Table)
+{
+    cash *o_cash = (cash *)malloc(sizeof(cash));
+    if (o_cash == NULL)
+    {
+        exit(1);
+    }
+    o_cash->size_T = size_Table;
+    o_cash->table = create_HASH_TABLE(size_Table);
+    return o_cash;
+}
+
+void free_cash(cash *CASH)
+{
+    free_HASH(CASH->table);
+    free(CASH);
+}
+
+int init_value_in_list(cash *Cash, int page)
+{
+    int index = hash_function(page, Cash->table->capacity);
+    if (find_node(Cash->table->array[index], page) != NULL)
+    {
+        return 1; // Element already exists
+    }
+    hash_add(Cash, page);
+    return 0; // Element added successfully
+}
+
+void print_list(LinkedList *list)
+{
+    node *current = list->head;
+    while (current != NULL)
+    {
+        printf("%d ", current->val);
+        current = current->next;
+    }
+}
+
+int print(cash *cash, int *array, int size)
+{
+    int result = 0;
+    for (int i = 0; i < size; i++)
+    {
+        result += init_value_in_list(cash, array[i]);
+    }
+    return result;
+}
+
+int main()
+{
+    int result = 0;
+    int a = 0;
+    int b = 0;
+    int *arr = NULL;
+    cash *cash = NULL;
+
+    scanf("%d", &a);
+    printf
+
+    scanf("%d", &b);
+
+    cash = init_cash(b); // Assuming size of hash table equals the number of elements in the array
+    arr = (int *)malloc(b * sizeof(int));
+    if (arr == NULL)
+    {
+        exit(1);
+    }
+
+    for (int i = 0; i < b; i++)
+    {
+        scanf("%d", &arr[i]);
+    }
+
+    result = print(cash, arr, b);
+
+    printf("%d\n", result);
+
+    free_cash(cash);
+    free(arr);
+
+    return 0;
+}
