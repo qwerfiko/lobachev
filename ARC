@@ -254,3 +254,33 @@ int cache_lookup(arc_cache* cache, int page) {
     }
     return 0;
 }
+
+int main() {
+    // Размер кэша
+    int cache_size = 5;
+
+    // Создание кэша
+    arc_cache* cache = create_arc_cache(cache_size);
+
+    // Добавление страниц в кэш
+    cache_add(cache, 1);
+    cache_add(cache, 2);
+    cache_add(cache, 3);
+    cache_add(cache, 4);
+    cache_add(cache, 5);
+
+    // Проверка присутствия страниц в кэше
+    printf("Page 3 is%s in the cache\n", cache_lookup(cache, 3) ? "" : " not");
+    printf("Page 6 is%s in the cache\n", cache_lookup(cache, 6) ? "" : " not");
+
+    // Удаление страниц из кэша
+    cache_delete(cache, 4);
+
+    // Проверка присутствия страниц в кэше после удаления
+    printf("Page 4 is%s in the cache after deletion\n", cache_lookup(cache, 4) ? "" : " not");
+
+    // Освобождение памяти, выделенной для кэша
+    destroy_arc_cache(cache);
+
+    return 0;
+}
