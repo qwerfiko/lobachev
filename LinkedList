@@ -1,0 +1,153 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct Node {
+    int data;
+    struct Node* next;
+    struct Node* prev;
+} Node;
+
+Node* createNode(int data) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->data = data;
+    newNode->next = NULL;
+    newNode->prev = NULL;
+    return newNode;
+}
+
+void insertAtStart(Node** head, int data) {
+    Node* newNode = createNode(data);
+    if (*head == NULL) {
+        *head = newNode;
+        return;
+    }
+    newNode->next = *head;
+    (*head)->prev = newNode;
+    *head = newNode;
+}
+
+void insertAtEnd(Node** head, int data) {
+    Node* newNode = createNode(data);
+    if (*head == NULL) {
+        *head = newNode;
+        return;
+    }
+    Node* temp = *head;
+    while (temp->next != NULL) {
+        temp = temp->next;
+    }
+    temp->next = newNode;
+    newNode->prev = temp;
+}
+
+void deleteFromStart(Node** head) {
+    if (*head == NULL) {
+        printf("Список пуст\n");
+        return;
+    }
+    Node* temp = *head;
+    *head = (*head)->next;
+    if (*head != NULL) {
+        (*head)->prev = NULL;
+    }
+    free(temp);
+}
+
+void deleteFromEnd(Node** head) {
+    if (*head == NULL) {
+        printf("Список пуст\n");
+        return;
+    }
+    Node* temp = *head;
+    while (temp->next != NULL) {
+        temp = temp->next;
+    }
+    if (temp->prev != NULL) {
+        temp->prev->next = NULL;
+    } else {
+        *head = NULL;
+    }
+    free(temp);
+}
+
+void printList(Node* head) {
+    Node* temp = head;
+    while (temp != NULL) {
+        printf("%d ", temp->data);
+        temp = temp->next;
+    }
+    printf("\n");
+}
+
+void deleteNode(Node** head_ref, Node* del) {
+    // базовый случай
+    if (*head_ref == NULL || del == NULL)
+        return;
+
+    // Если узел для удаления является головным узлом
+    if (*head_ref == del)
+        *head_ref = del->next;
+
+    // Изменить next, только если узел для удаления НЕ является последним узлом
+    if (del->next != NULL)
+        del->next->prev = del->prev;
+
+    // Изменить prev, только если узел для удаления НЕ является первым узлом
+    if (del->prev != NULL)
+        del->prev->next = del->next;
+
+    // Освободить память, занятую del
+    free(del);
+}
+
+void deleteByKey(Node** head_ref, int key) {
+    // Если список пуст
+    if (*head_ref == NULL)
+        return;
+
+    Node* current = *head_ref;
+    Node* next;
+
+    // Пройдите по списку и удалите все вхождения ключа
+    while (current != NULL) {
+        // Сохранить следующий узел для дальнейшего использования
+        next = current->next;
+
+        // Проверьте, является ли текущий узел ключом
+        if (current->data == key)
+            deleteNode(head_ref, current);
+
+        // Перейти к следующему узлу
+        current = next;
+    }
+}
+
+int isPresent(Node** head, int data) {
+    Node* temp = *head;
+    while (temp != NULL) {
+        if (temp->data == data) {
+            printf ("%d is in List \n", data);
+            return 1;
+        }
+        temp = temp->next;
+    }
+    printf ("%d isn't in List \n", data);
+    return 0;
+}
+
+
+int main() {
+    Node* head = NULL;
+    insertAtStart(&head, 1);
+    insertAtEnd(&head, 2);
+    insertAtEnd(&head, 3);
+    printList(head);
+    isPresent (&head, 3);
+    deleteByKey(&head, 3);
+    isPresent(&head, 3);
+    //deleteFromStart(&head);
+    printList(head);
+    //deleteFromEnd(&head);
+    //printList(head);
+    return 0;
+}
