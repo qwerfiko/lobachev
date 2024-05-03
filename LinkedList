@@ -80,46 +80,35 @@ void printList(Node* head) {
 }
 
 void deleteNode(Node** head_ref, Node* del) {
-    // базовый случай
     if (*head_ref == NULL || del == NULL)
         return;
 
-    // Если узел для удаления является головным узлом
     if (*head_ref == del)
         *head_ref = del->next;
 
-    // Изменить next, только если узел для удаления НЕ является последним узлом
     if (del->next != NULL)
         del->next->prev = del->prev;
 
-    // Изменить prev, только если узел для удаления НЕ является первым узлом
     if (del->prev != NULL)
         del->prev->next = del->next;
 
-    // Освободить память, занятую del
     free(del);
 }
 
 void deleteByKey(Node** head_ref, int key) {
-    // Если список пуст
     if (*head_ref == NULL)
         return;
 
     Node* current = *head_ref;
     Node* next;
 
-    // Пройдите по списку и удалите все вхождения ключа
     while (current != NULL) {
-        // Сохранить следующий узел для дальнейшего использования
         next = current->next;
-
-        // Проверьте, является ли текущий узел ключом
         if (current->data == key)
             deleteNode(head_ref, current);
-
-        // Перейти к следующему узлу
-        current = next;
+            current = next;
     }
+    printf ("%d was deleted\n", key );
 }
 
 int isPresent(Node** head, int data) {
@@ -141,6 +130,8 @@ int main() {
     insertAtStart(&head, 1);
     insertAtEnd(&head, 2);
     insertAtEnd(&head, 3);
+    insertAtStart (&head, 4);
+    printf("Адрес начала списка: %p\n", (void*)&head);
     printList(head);
     isPresent (&head, 3);
     deleteByKey(&head, 3);
