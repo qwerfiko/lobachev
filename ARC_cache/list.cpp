@@ -91,3 +91,12 @@ void popBack(LinkedList *list)
 	list->now_size--;
 
 }
+
+
+void print_list(LinkedList* list) {
+    node* current = list->head;
+    while (current != NULL) {
+        printf("%d ", current->val);
+        current = current->next;
+    }
+}

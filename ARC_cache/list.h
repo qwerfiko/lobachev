@@ -25,5 +25,6 @@ LinkedList* List(int size);
 void list_free(LinkedList **list);
 void pushFront(LinkedList *list, int data);
 void popBack(LinkedList *list);
+void print_list(LinkedList* list);
 
 #endif

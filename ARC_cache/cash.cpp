@@ -8,28 +8,43 @@
 
 
 int main() {
-    // Создаем четыре списка
-    LinkedList* T1 = List(100); // Замените 100 на нужный размер
-    LinkedList* T2 = List(100);
-    LinkedList* B1 = List(100);
-    LinkedList* B2 = List(100);
+    // Создаем новую хэш-таблицу
+    HashTable* table = newHashTable(1000);
 
-    // Добавляем число 2 в список T1
-    pushFront(T1, 2);
+    // Создаем списки
+    LinkedList* listT1 = List(100);
+    LinkedList* listT2 = List(100);
+    LinkedList* listB1 = List(100);
+    LinkedList* listB2 = List(100);
 
-    // Выводим содержимое всех списков
+    //
+    pushFront(listT1, 2);
+
+    //IsPresent(listT1, 2);
+
+    pushFront (listT2, 3);
+
+
+    hashTableAdd(table, 2, T1);
+
+    hashTableAdd(table, 3, T2);
+
+
+    // Выводим содержимое списка T1
     printf("Содержимое списка T1: ");
-    node* tmp = T1->head;
-    while (tmp != NULL) {
-        printf("%d ", tmp->val);
-        tmp = tmp->next;
-    }
+    print_list(listT1);
+    printf("\n");
+     printf("Содержимое списка T2: ");
+    print_list(listT2);
     printf("\n");
 
-    // Повторите этот процесс для списков T2, B1 и B2
+    printHashTable(table);
 
     return 0;
 }
+
+
+
 
 
 
